@@ -1,0 +1,16 @@
+Options -MultiViews
+
+<FilesMatch "\.(db|conf)$">
+	Deny From All
+</FilesMatch>
+
+AddHandler cgi-script .cgi
+#AddHandler cgi-script-debug .cgi
+
+RewriteEngine On
+RewriteBase /niro/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ niro.cgi/$1 [L,QSA]
+RewriteRule ^$ niro.cgi/ [L,QSA]
+
