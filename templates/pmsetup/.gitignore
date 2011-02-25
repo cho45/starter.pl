@@ -9,3 +9,5 @@ MANIFEST.bak
 pod.html
 *.tmp
 cover_db
+startup.sh
+

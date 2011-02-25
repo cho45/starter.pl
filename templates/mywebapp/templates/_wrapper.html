@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>[% title %]</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+		<link rel="stylesheet" type="text/css" href="/css/<?= $_->{myname} ?>.css" media="screen,tv"/>
+		<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"/>
+
+		<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+		[% JS = [] %]
+		[% JS.push("/js/jquery-1.5.min.js") %]
+		[% JS.push("/js/jquery.tmpl.min.js") %]
+		[% JS.push("/js/jsdeferred.js") %]
+		[% JS.push("/js/parseIRCMessage.js") %]
+		[% JS.push("/js/daterelative.js") %]
+		[% JS.push("/js/createElementFromString.js") %]
+		[% JS.push("/js/location.js") %]
+		[% JS.push("/js/utils.js") %]
+
+		<!--
+		[% FOR path IN JS %]
+		<script type="text/javascript" src="[% path %]"></script>
+		[% END %]
+		-->
+		<script type="text/javascript" src="/.shared.js:[% r.version %]:[% JS.join(',') %]"></script>
+
+		<script type="text/javascript" src="/js/<?= $_->{myname} ?>.js"></script>
+	</head>
+	<body id="[% id %]">
+		<header>
+		<h1 id="header"><a href="#"><?= $_->{module} ?></a></h1>
+		</header>
+		[% content %]
+	</div>
+</body>
+</html>
