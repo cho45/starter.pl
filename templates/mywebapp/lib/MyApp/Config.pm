@@ -1,58 +1,23 @@
-package <?= $_->{module} ?>::Config;
-# PRIMITIVE CONFIG CLASS
-# YOU MUST NOT USE ANY MORE MODULES
-# Seealso: Init.pm
+package MyApp::Config;
+
+use utf8;
 use strict;
 use warnings;
-use Path::Class;
-use URI;
-use parent 'Exporter::Lite';
-our @EXPORT = qw(config);
+use Config::ENV 'PLACK_ENV', export => 'config';
 
-my $config = +{
-    default => {
-    },
-
-    staging => {
-    },
-
-    production => {
-    },
-
-    test => {
-        test => 1,
-    },
+common +{
+	appname => 'myapp',
 };
 
-my $root = file(__FILE__)->parent->parent->parent->parent;
-sub root () { $root }
 
-my $instance;
-sub config {
-    $instance ||= do {
-        my $env = $ENV{RIDGE_ENV} || 'default';
-        my $ret = +{
-            %{ $config->{default} || {} },
-            %{ $config->{$env} || {}    },
-        };
+config development => {
+};
 
-        bless +{ env => $env, hash => $ret }, __PACKAGE__; # DO NOT EXTEND THIS CLASS;
-    }
-}
+config staging => {
+};
 
-sub env {
-    my ($self) = @_;
-    $self->{env};
-}
-
-sub param {
-    my ($self, $name) = @_;
-    $self->{hash}->{$name};
-}
-
+config production => {
+};
 
 1;
 __END__
-
-
-

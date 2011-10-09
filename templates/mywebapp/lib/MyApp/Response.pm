@@ -1,9 +1,12 @@
-package <?= $_->{module} ?>::Web::Response;
+package MyApp::Response;
 
+use utf8;
 use strict;
 use warnings;
 use parent qw(Plack::Response);
 
+
+
+
 1;
-
-
+__END__
