@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use lib 't/lib';
 use Test::More;
 use Test::Name::FromLine;
 
@@ -8,6 +9,8 @@ use HTTP::Message::PSGI;
 use Router::Simple;
 
 BEGIN { use_ok( 'MyApp' ); }
+
+use MyApp::Test;
 
 subtest base => sub {
 	my $app = MyApp->new(GET('/')->to_psgi);
@@ -59,6 +62,11 @@ subtest xframeoptions => sub {
 		my $r = MyApp->new(GET('/no')->to_psgi)->run;
 		is $r->res->header('X-Frame-Options'), undef;
 	};
+};
+
+subtest default => sub {
+	my $mech = mechanize();
+	$mech->get_ok("/");
 };
 
 done_testing;
