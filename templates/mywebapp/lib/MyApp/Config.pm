@@ -11,13 +11,24 @@ common +{
 	appname => 'myapp',
 };
 
-config development => {
+config development => do {
+	my $file   = root->file("app.conf-sample");
+	my $config = do "$file";
+	unless ($config) {
+		die "Couldn't parse $file: $@" if $@;
+		die "Couldn't do $file: $!" unless defined $config;
+		die "Couldn't run $file: $!" unless $config;
+	}
+	$config;
 };
 
+
 config staging => {
+	parent('development'),
 };
 
 config production => {
+	parent('development'),
 };
 
 1;

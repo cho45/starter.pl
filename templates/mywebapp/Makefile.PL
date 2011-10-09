@@ -11,11 +11,15 @@ requires 'Plack::Middleware::ReverseProxy';
 requires 'Plack::Middleware::StaticShared';
 requires 'Plack::Middleware::Auth::Basic';
 requires 'Cache::LRU';
+requires 'Config::ENV';
+requires 'HTTP::Server::Simple::PSGI';
 
 requires 'Router::Simple';
 
 requires 'Text::Xslate';
 requires 'Text::Xslate::Bridge::TT2Like';
+
+test_requires 'Test::WWW::Mechanize::PSGI';
 
 build_requires 'Test::Most';
 
