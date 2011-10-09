@@ -52,8 +52,8 @@ sub copy_templates_to_dist {
 		my $path = $file->relative($template_dir);
 
 		if (!$file->is_dir) {
-			for my $key (keys %$rule) {
-				$path =~ s/$key/$rule->{$key}/ge;
+			for my $key (keys %{ $rule->{path} }) {
+				$path =~ s/$key/$rule->{path}->{$key}/ge;
 			}
 			$path =~ s/^$template_dir/$dist/;
 			$path = file($path);
@@ -65,8 +65,8 @@ sub copy_templates_to_dist {
 			copy($file, $target);
 
 			my $content = $target->slurp;
-			for my $key (keys %$rule) {
-				$content =~ s/$key/$rule->{$key}/ge;
+			for my $key (keys %{ $rule->{content} }) {
+				$content =~ s/$key/$rule->{content}->{$key}/ge;
 			}
 			my $fh = $target->openw;
 			my $rr = do {
@@ -146,10 +146,18 @@ my $path      = $pkg->join("/") . ".pm";
 my $appprefix = join '_', map lc, @$pkg;
 my $opts      = {
 	rule => {
-		MyApp  => $pkg->join("/"),
-		myapp  => $appprefix,
-		MyName => $pkg->join("/"),
-		myname => $appprefix,
+		path => {
+			MyApp  => $pkg->join("/"),
+			myapp  => $appprefix,
+			MyName => $pkg->join("-"),
+			myname => $appprefix,
+		},
+		content => {
+			MyApp  => $pkg->join("::"),
+			myapp  => $appprefix,
+			MyName => $pkg->join("::"),
+			myname => $appprefix,
+		},
 	},
 	vars => {
 		'module'    => $module,
