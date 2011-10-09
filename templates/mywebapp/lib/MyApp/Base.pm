@@ -8,6 +8,8 @@ use parent qw(Exporter::Lite);
 use Router::Simple;
 use Try::Tiny;
 
+use Plack::Session;
+
 use MyApp::Config;
 use MyApp::Request;
 use MyApp::Response;
@@ -81,6 +83,12 @@ sub run {
 
 sub req { $_[0]->{req} }
 sub res { $_[0]->{res} }
+
+sub session {
+    $_[0]->{session} //= do {
+        $_[0]->{req}->env->{'psgix.session'} ? Plack::Session->new($_[0]->{req}->env) : ''
+    };
+}
 
 1;
 __END__
