@@ -3,8 +3,8 @@ package MyApp::Base;
 use utf8;
 use strict;
 use warnings;
+use parent qw(Exporter::Lite);
 
-use Exporter::Lite;
 use Router::Simple;
 use Try::Tiny;
 

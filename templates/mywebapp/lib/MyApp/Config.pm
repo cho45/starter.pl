@@ -4,11 +4,12 @@ use utf8;
 use strict;
 use warnings;
 use Config::ENV 'PLACK_ENV', export => 'config';
+use Path::Class;
+use constant root => dir(".")->absolute;
 
 common +{
 	appname => 'myapp',
 };
-
 
 config development => {
 };
