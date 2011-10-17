@@ -55,7 +55,7 @@ sub copy_templates_to_dist {
 			for my $key (keys %{ $rule->{path} }) {
 				$path =~ s/$key/$rule->{path}->{$key}/ge;
 			}
-			$path =~ s/^$template_dir/$dist/;
+			$path =~ s/^\Q$template_dir\E/$dist/;
 			$path = file($path);
 
 			my $target = $dist->file($path);
