@@ -8,7 +8,6 @@ use UNIVERSAL::require;
 use Path::Class;
 use Plack::Builder;
 use File::Spec;
-use Cache::LRU;
 
 use MyApp;
 

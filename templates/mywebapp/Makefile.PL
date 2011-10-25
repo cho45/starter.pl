@@ -10,7 +10,6 @@ requires 'Plack::Session';
 requires 'Plack::Middleware::ReverseProxy';
 requires 'Plack::Middleware::StaticShared';
 requires 'Plack::Middleware::Auth::Basic';
-requires 'Cache::LRU';
 requires 'Config::ENV';
 requires 'HTTP::Server::Simple::PSGI';
 
