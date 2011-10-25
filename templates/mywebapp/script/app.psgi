@@ -6,8 +6,15 @@ use lib glob 'modules/*/lib';
 
 use UNIVERSAL::require;
 use Path::Class;
-use Plack::Builder;
 use File::Spec;
+use Data::MessagePack;
+
+use Plack::Builder;
+use Plack::Session::State::Cookie;
+use Plack::Session::Store::File;
+
+my $MessagePack = Data::MessagePack->new;
+$MessagePack->canonical;
 
 use MyApp;
 
@@ -17,7 +24,16 @@ builder {
 		root => config->root->subdir('static');
 
 	enable "Plack::Middleware::ReverseProxy";
-	enable "Plack::Middleware::Session";
+	enable "Plack::Middleware::Session",
+		state => Plack::Session::State::Cookie->new(
+			session_key => 's',
+			expires => undef,
+		),
+		store => Plack::Session::Store::File->new(
+			dir          => config->root->subdir('session'),
+			serializer   => sub { $MessagePack->pack(+shift) },
+			deserializer => sub { eval { $MessagePack->unpack(+shift) } || +{} },
+		);
 
 	sub {
 		MyApp->new(shift)->run->res->finalize;

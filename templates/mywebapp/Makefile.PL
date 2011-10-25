@@ -12,6 +12,7 @@ requires 'Plack::Middleware::StaticShared';
 requires 'Plack::Middleware::Auth::Basic';
 requires 'Config::ENV';
 requires 'HTTP::Server::Simple::PSGI';
+requires 'Data::MessagePack';
 
 requires 'Router::Simple';
 
