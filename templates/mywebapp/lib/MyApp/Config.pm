@@ -9,9 +9,11 @@ use constant root => dir(".")->absolute;
 
 common +{
 	appname => 'myapp',
+	load("app.conf-sample"),
 };
 
-config development => do +root->file("app.conf-sample").q() || die "$!$@";
+config development => {
+};
 
 config staging => {
 	parent('development'),
