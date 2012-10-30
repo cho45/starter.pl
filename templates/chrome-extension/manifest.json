@@ -1,0 +1,47 @@
+{
+	"name": "My Extension",
+	"version": "0.0.1",
+
+	"description": "A plain text description",
+	"icons": {
+		"16" : "16.png",
+		"48" : "48.png",
+		"128" : "128.png"
+	},
+	"default_locale": "en",
+
+	"browser_action": {},
+	"page_action": {},
+	"theme": {},
+	"app": {},
+
+	"content_scripts": [
+		{
+			"matches": ["http://*.example.com/*"],
+			"js": [
+				"content.js"
+			]
+		}
+	],
+	"background_page": "background.html",
+	"options_page": "options.html",
+
+	"permissions": [
+		"tabs",
+		"http://*.example.com/*"
+	],
+
+	"chrome_url_overrides": {},
+	"content_security_policy": "policyString",
+	"file_browser_handlers": [],
+	"homepage_url": "http://path/to/homepage",
+	"incognito": "spanning",
+	"key": undefined,
+	"minimum_chrome_version": undefined,
+	"nacl_modules": [],
+	"offline_enabled": true,
+	"omnibox": {},
+	"plugins": [],
+	"requirements": {},
+	"update_url": "http://path/to/updateInfo.xml"
+}
