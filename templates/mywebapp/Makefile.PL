@@ -13,6 +13,7 @@ requires 'Plack::Middleware::Auth::Basic';
 requires 'Config::ENV' => 0.10;
 requires 'HTTP::Server::Simple::PSGI';
 requires 'Data::MessagePack';
+requires 'JSON';
 
 requires 'Router::Simple';
 

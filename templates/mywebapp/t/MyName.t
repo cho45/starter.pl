@@ -1,3 +1,4 @@
+use utf8;
 use strict;
 use warnings;
 use lib 't/lib';
@@ -7,10 +8,12 @@ use Test::Name::FromLine;
 use HTTP::Request::Common;
 use HTTP::Message::PSGI;
 use Router::Simple;
+use URI::Escape;
 
 BEGIN { use_ok( 'MyApp' ); }
 
 use MyApp::Test;
+use MyApp::Request;
 
 subtest base => sub {
 	my $app = MyApp->new(GET('/')->to_psgi);
@@ -67,6 +70,42 @@ subtest xframeoptions => sub {
 subtest default => sub {
 	my $mech = mechanize();
 	$mech->get_ok("/");
+};
+
+subtest number_param => sub {
+	is +MyApp::Request->new(GET('/?a=1')->to_psgi)->number_param('a'), 1;
+	is +MyApp::Request->new(GET('/?a=1&a=2')->to_psgi)->number_param('a'), 2;
+	is +MyApp::Request->new(GET('/?a=1.5')->to_psgi)->number_param('a'), 1.5;
+	is +MyApp::Request->new(GET('/?a=1.5.5')->to_psgi)->number_param('a'), undef;
+	is +MyApp::Request->new(GET('/?a=one')->to_psgi)->number_param('a'), undef;
+
+	is +MyApp::Request->new(GET('/?a=3')->to_psgi)->number_param('a', 2), 2;
+	is +MyApp::Request->new(GET('/?a=3')->to_psgi)->number_param('a', 3), 3;
+	is +MyApp::Request->new(GET('/?a=3')->to_psgi)->number_param('a', 4), 3;
+};
+
+subtest string_param => sub {
+	is +MyApp::Request->new(GET('/?a=1')->to_psgi)->string_param('a'), '1';
+	is +MyApp::Request->new(GET('/?a=1&a=2')->to_psgi)->string_param('a'), '2';
+	is +MyApp::Request->new(GET('/?a=1.5')->to_psgi)->string_param('a'), '1.5';
+	is +MyApp::Request->new(GET('/?a=one')->to_psgi)->string_param('a'), 'one';
+	is +MyApp::Request->new(GET('/?a=あ')->to_psgi)->string_param('a'), 'あ';
+	ok utf8::is_utf8 +MyApp::Request->new(GET('/?a=あ')->to_psgi)->string_param('a');
+
+	is +MyApp::Request->new(GET('/?a=1234567890')->to_psgi)->string_param('a', 5), '12345';
+	is +MyApp::Request->new(GET('/?a=あいうえお')->to_psgi)->string_param('a', 3), 'あいう';
+};
+
+subtest json_param => sub {
+	is +MyApp::Request->new(GET('/?a=xxx')->to_psgi)->json_param('a'), undef;
+	is_deeply +MyApp::Request->new(GET('/?a=[1]')->to_psgi)->json_param('a'), [1];
+	is_deeply +MyApp::Request->new(GET('/?a={"foo":1}')->to_psgi)->json_param('a'), { foo => 1 };
+};
+
+subtest if_none_match => sub {
+	ok +MyApp::Request->new(GET('/', 'If-None-Match' => 'aaa')->to_psgi)->if_none_match('');
+	ok !+MyApp::Request->new(GET('/', 'If-None-Match' => 'aaa')->to_psgi)->if_none_match('aaa');
+	ok +MyApp::Request->new(GET('/')->to_psgi)->if_none_match('aaa');
 };
 
 done_testing;
