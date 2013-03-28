@@ -31,8 +31,18 @@ builder {
 		),
 		store => Plack::Session::Store::File->new(
 			dir          => config->root->subdir('session'),
-			serializer   => sub { $MessagePack->pack(+shift) },
-			deserializer => sub { eval { $MessagePack->unpack(+shift) } || +{} },
+			serializer   => sub {
+				my ($session, $file) = @_;
+				my $fh = file($file)->openw;
+				print $fh $MessagePack->pack($session);
+				close $fh;
+			},
+			deserializer => sub {
+				my ($file) = @_;
+				eval {
+					$MessagePack->unpack(scalar file($file)->slurp)
+				} || +{}
+			},
 		);
 
 	sub {
