@@ -9,6 +9,7 @@ use Router::Simple;
 use Try::Tiny;
 
 use Plack::Session;
+use Digest::SHA1 qw(sha1_hex);
 
 use MyApp::Config;
 use MyApp::Request;
@@ -34,7 +35,12 @@ sub new {
 }
 
 sub before_dispatch {
-	my ($r) = @_;
+	my ($r, $attr) = @_;
+
+	if (!defined($attr->{csrf_check}->[0]) || $attr->{csrf_check}->[0]) {
+		$r->require_sk;
+	}
+
 	$r->res->header('X-Frame-Options'  => 'DENY');
 	$r->res->header('X-XSS-Protection' => '1');
 }
@@ -51,15 +57,16 @@ sub run {
 			my $action = delete $dest->{action};
 			$r->req->path_parameters(%$dest);
 
-			$r->before_dispatch;
-
 			if (ref($action) eq 'CODE') {
+				$r->before_dispatch({});
 				$action->(local $_ = $r);
 			} else {
 				my ($module, $method) = split /\s+/, $action;
 				$module->use or die $@;
 				$method ||= 'default';
-				$module->$method($r);
+				my $sub = $module->can($method) or die "$method is missing";
+				$r->before_dispatch($module->attributes($sub));
+				$sub->($module, $r);
 			}
 		} else {
 			throw code => 404, message => 'Action not Found';
@@ -85,10 +92,26 @@ sub req { $_[0]->{req} }
 sub res { $_[0]->{res} }
 
 sub session {
-    $_[0]->{session} //= do {
-        $_[0]->{req}->env->{'psgix.session'} ? Plack::Session->new($_[0]->{req}->env) : ''
-    };
+	$_[0]->{session} //= do {
+		$_[0]->{req}->env->{'psgix.session'} ? Plack::Session->new($_[0]->{req}->env) : ''
+	};
 }
+
+sub sk {
+	my ($r) = @_;
+	sha1_hex($r->session->id);
+}
+
+sub require_sk {
+	my ($r) = @_;
+	if ($r->req->method eq 'POST') {
+		my $sk = $r->req->param('sk') or throw code => 400, message => 'Require session key';
+		if ($r->sk ne $sk) {
+			throw code => 400, message => 'Invalid session key';
+		}
+	}
+}
+
 
 1;
 __END__
