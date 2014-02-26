@@ -17,6 +17,7 @@ use MyApp::Config;
 my $XSLATE = Text::Xslate->new(
 	syntax   => 'TTerse',
 	path     => [ config->root->subdir('templates') ],
+	module   => [ 'Text::Xslate::Bridge::TT2Like' ],
 	cache    => 1,
 	function => {
 		trim => sub {
