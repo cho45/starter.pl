@@ -1,11 +1,11 @@
 #!/usr/bin/env perl
 
+use v5.10;
 use strict;
 use warnings;
 
 use Pod::Usage;
 use Getopt::Long;
-use Perl6::Say;
 use autobox;
 use autobox::Core;
 
