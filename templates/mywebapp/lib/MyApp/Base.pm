@@ -10,6 +10,8 @@ use Try::Tiny;
 
 use Plack::Session;
 use Digest::SHA1 qw(sha1_hex);
+use Path::Class;
+use DBI;
 
 use MyApp::Config;
 use MyApp::Request;
@@ -88,6 +90,10 @@ sub run {
 	$r;
 }
 
+sub config_param {
+	config->param($_[1]);
+}
+
 sub req { $_[0]->{req} }
 sub res { $_[0]->{res} }
 
@@ -95,6 +101,43 @@ sub session {
 	$_[0]->{session} //= do {
 		$_[0]->{req}->env->{'psgix.session'} ? Plack::Session->new($_[0]->{req}->env) : ''
 	};
+}
+
+sub dbh {
+	$_[0]->{dbh} //= do {
+		DBI->connect('dbi:SQLite:' . config->param('db'), "", "", {
+			RaiseError => 1,
+			sqlite_see_if_its_a_number => 1,
+			sqlite_unicode => 1,
+		});
+	};
+}
+
+sub setup_schema {
+	my ($class) = @_;
+	my $schema = file('db/schema.sql')->slurp;
+	my $dbh = DBI->connect('dbi:SQLite:' . config->param('db'));
+	$dbh->do($_) for split /;/, $schema;
+}
+
+sub stash {
+	my ($r, $key, $val) = @_;
+	$r->{stash} ||= {};
+
+	if (defined $val) {
+		$r->{stash}->{$key} = $val;
+	} elsif (defined $key) {
+		$r->{stash}->{$key};
+	} else {
+		$r->{stash};
+	}
+}
+
+sub absolute {
+	my ($r, $path) = @_;
+	my $uri = $r->req->uri->clone;
+	$uri->path_query($path);
+	"$uri";
 }
 
 sub sk {

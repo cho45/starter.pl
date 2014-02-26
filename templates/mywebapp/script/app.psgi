@@ -17,6 +17,9 @@ my $MessagePack = Data::MessagePack->new;
 $MessagePack->canonical;
 
 use MyApp;
+if (not -e config->param('db')) {
+	MyApp->setup_schema;
+}
 
 builder {
 	enable "Plack::Middleware::Static",

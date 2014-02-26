@@ -13,14 +13,11 @@ common +{
 };
 
 config development => {
-};
-
-config staging => {
-	parent('development'),
+	db => root->file('db/development.db'),
 };
 
 config production => {
-	parent('development'),
+	db => root->file('db/deployment.db'),
 };
 
 1;

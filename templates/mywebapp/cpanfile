@@ -1,0 +1,26 @@
+
+requires 'Encode' => 2.42;
+
+requires 'Plack';
+requires 'Plack::Session';
+requires 'Plack::Middleware::ReverseProxy';
+requires 'Plack::Middleware::StaticShared';
+requires 'Plack::Middleware::Auth::Basic';
+requires 'Config::ENV' => 0.10;
+requires 'HTTP::Server::Simple::PSGI';
+requires 'Data::MessagePack';
+requires 'JSON';
+requires 'HTML::Trim';
+
+requires 'Teng';
+requires 'DBI';
+requires 'DBD::SQLite';
+
+requires 'Router::Simple';
+
+requires 'Text::Xslate';
+requires 'Text::Xslate::Bridge::TT2Like';
+
+requires 'Test::WWW::Mechanize::PSGI';
+
+requires 'Test::Most';
